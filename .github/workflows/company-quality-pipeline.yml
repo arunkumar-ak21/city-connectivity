@@ -54,19 +54,27 @@ jobs:
         if: always()
         run: |
           mkdir -p reports
+
+          TARGET_JSON="reports/quality-report.json"
+          TARGET_HTML="reports/quality-report.html"
+
           JSON_REPORT="$(ls -t reports/*.json 2>/dev/null | head -n 1 || true)"
           HTML_REPORT="$(ls -t reports/*.html 2>/dev/null | head -n 1 || true)"
 
           if [ -n "$JSON_REPORT" ]; then
-            cp "$JSON_REPORT" reports/quality-report.json
+            if [ "$JSON_REPORT" != "$TARGET_JSON" ]; then
+              cp "$JSON_REPORT" "$TARGET_JSON"
+            fi
           else
-            echo '{"verdict":"error","error":"No JSON report generated"}' > reports/quality-report.json
+            echo '{"verdict":"error","error":"No JSON report generated"}' > "$TARGET_JSON"
           fi
 
           if [ -n "$HTML_REPORT" ]; then
-            cp "$HTML_REPORT" reports/quality-report.html
+            if [ "$HTML_REPORT" != "$TARGET_HTML" ]; then
+              cp "$HTML_REPORT" "$TARGET_HTML"
+            fi
           else
-            echo "<html><body><h1>No HTML report generated</h1></body></html>" > reports/quality-report.html
+            echo "<html><body><h1>No HTML report generated</h1></body></html>" > "$TARGET_HTML"
           fi
 
       - name: Build dashboard quality payload
